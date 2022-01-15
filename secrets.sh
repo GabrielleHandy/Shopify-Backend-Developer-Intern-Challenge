@@ -1,1 +1,1 @@
-export APP_SECRET_KEY="nkbGVDkc1nds4d"
+export APP_SECRET_KEY="nkbGVDkgfhghggdbd"

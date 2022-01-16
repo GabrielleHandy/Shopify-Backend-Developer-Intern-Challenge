@@ -27,8 +27,12 @@ def create_item_shipped(item_id, shipment_id, quantity):
     return item_ship
 
 
-def get_item_shipped(item_shipped_id):
+def get_item_shipped_by_id(item_shipped_id):
     return Item_Shipped.query.get(item_shipped_id)
+
+def get_item_shipped(ship_id, item_id):
+    return Item_Shipped.query.filter(Item_Shipped.shipment_id == ship_id, 
+                                    Item_Shipped.item_id == item_id).first()
 
 
 def create_shipment(ship_to="Some happy customer",
@@ -56,8 +60,10 @@ def get_item_by_id(item_id):
     return Item.query.get(item_id)
 
 
-def delete_item(item):
+def delete_item(item_id):
     """Deletes an instance of an item"""
+    item = get_item_by_id(item_id)
+    
     db.session.delete(item)
     db.session.commit()
     return "deleted"
@@ -81,6 +87,16 @@ def change_quantity(item_id, new_quantity):
     else:
         return "Not enough items in Inventory"
 
+def change_quantity_from_form(item_id, new_quantity):
+    """Changes an item's quantity from edit form"""
+    item = get_item_by_id(item_id)
+    item.quantity = new_quantity
+
+    
+    db.session.commit()
+        
+   
+
 
 def change_description(item_id, new_descr):
     item = get_item_by_id(item_id)
@@ -94,6 +110,16 @@ def change_description(item_id, new_descr):
 def get_shipment_by_id(shipment_id):
     return Shipment.query.get(shipment_id)
 
+def delete_shipment(shipment_id):
+    ship = get_shipment_by_id(shipment_id)
+    if ship.items:
+        # This is to add the quantity back to inventory
+        for item in ship.items:
+            remove_item(shipment_id, item.item_id)
+
+    db.session.delete(ship)
+    db.session.commit()
+
 
 def add_item(shipment_id, item_id, quantity):
     shipment = get_shipment_by_id(shipment_id)
@@ -103,15 +129,33 @@ def add_item(shipment_id, item_id, quantity):
         if result == True:
             added_item = create_item_shipped(item_id, shipment_id, quantity)
 
-            return added_item
+            return True
         else:
             return result
-    return "Already in shipment! Increase quantity to add more to shipment"
+    return "This item is already in shipment!"
 
 
-def remove_item(item_shipped_id):
+
+
+def get_quantity_ship_item(list_ship):
+    """Gets quantity being shipped"""
+    shipped_item_quantity = {}
+    
+    for ship in set(list_ship):
+        if ship.ship_id not in shipped_item_quantity:
+            shipped_item_quantity[ship.ship_id] = []
+            item_amounts = {}
+        for item in ship.items: 
+            ship_item = get_item_shipped(ship.ship_id, item.item_id)    
+            item_amounts[item.item_id] = ship_item.quantity
+        shipped_item_quantity[ship.ship_id].append(item_amounts)
+    
+    return shipped_item_quantity
+
+
+def remove_item(ship_id, item_id):
     """Deletes an item from shipment"""
-    ship_item = get_item_shipped(item_shipped_id)
+    ship_item = get_item_shipped(ship_id, item_id)
     ship_amnt = ship_item.quantity
 
     change_quantity(ship_item.item_id, ship_amnt)
@@ -120,7 +164,10 @@ def remove_item(item_shipped_id):
     db.session.commit()
 
 
+def get_shipments():
+    """get shipments"""
 
+    return Shipment.query.all()
 
 
 

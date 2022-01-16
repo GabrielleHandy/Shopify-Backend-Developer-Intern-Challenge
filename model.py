@@ -51,7 +51,7 @@ class Item_Shipped(db.Model):
     def __repr__(self):
         return f"""Item_Shipped 
         item_shipped_id: {self.item_shipped_id} 
-        item_id:{self._item_id} 
+        item_id:{self.item_id} 
         shipment_id:{self.shipment_id} 
         quantity:{self.quantity}"""
 
@@ -102,4 +102,4 @@ if __name__ == "__main__":
     # too annoying; this will tell SQLAlchemy not to print out every
     # query it executes.
 
-    connect_to_db(app)
+    connect_to_db(app, echo=False)

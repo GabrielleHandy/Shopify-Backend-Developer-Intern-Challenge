@@ -2,6 +2,10 @@ from model import db, connect_to_db, Item, Item_Shipped, Shipment
 from datetime import date
 
 
+
+
+# CREATE ITEMS, SHIPMENTS, AND ITEMS IN SHIPMENTS
+
 def create_item(name, quantity, description=None, image=None):
     """Creates a new item."""
 
@@ -27,14 +31,6 @@ def create_item_shipped(item_id, shipment_id, quantity):
     return item_ship
 
 
-def get_item_shipped_by_id(item_shipped_id):
-    return Item_Shipped.query.get(item_shipped_id)
-
-def get_item_shipped(ship_id, item_id):
-    return Item_Shipped.query.filter(Item_Shipped.shipment_id == ship_id, 
-                                    Item_Shipped.item_id == item_id).first()
-
-
 def create_shipment(ship_to="Some happy customer",
                     ship_from="Some warehouse",
                     ship_date=date.today()):
@@ -49,7 +45,11 @@ def create_shipment(ship_to="Some happy customer",
     return shipment
 
 
+
+
+
 # ITEM FUNCTIONS
+
 def get_inventory():
     """Returns a list of all items"""
 
@@ -68,8 +68,10 @@ def delete_item(item_id):
     db.session.commit()
     return "deleted"
 
+# Edit an item in inventory functions
 
 def change_name(item_id, new_name):
+    """Changes an items name"""
     item = get_item_by_id(item_id)
     item.name = new_name
 
@@ -88,7 +90,7 @@ def change_quantity(item_id, new_quantity):
         return "Not enough items in Inventory"
 
 def change_quantity_from_form(item_id, new_quantity):
-    """Changes an item's quantity from edit form"""
+    """Changes an item's quantity in inventory from edit form"""
     item = get_item_by_id(item_id)
     item.quantity = new_quantity
 
@@ -122,6 +124,8 @@ def delete_shipment(shipment_id):
 
 
 def add_item(shipment_id, item_id, quantity):
+    """Adds an item to a shipment"""
+
     shipment = get_shipment_by_id(shipment_id)
     item = get_item_by_id(item_id)
     if item not in shipment.items:
@@ -132,9 +136,7 @@ def add_item(shipment_id, item_id, quantity):
             return True
         else:
             return result
-    return "This item is already in shipment!"
-
-
+    return "This item is already in this shipment!"
 
 
 def get_quantity_ship_item(list_ship):
@@ -168,6 +170,18 @@ def get_shipments():
     """get shipments"""
 
     return Shipment.query.all()
+
+
+# ITEMS IN SHIPMENTS FUNCTIONS
+
+def get_item_shipped_by_id(item_shipped_id):
+    return Item_Shipped.query.get(item_shipped_id)
+    
+
+def get_item_shipped(ship_id, item_id):
+    return Item_Shipped.query.filter(Item_Shipped.shipment_id == ship_id, 
+                                    Item_Shipped.item_id == item_id).first()
+
 
 
 

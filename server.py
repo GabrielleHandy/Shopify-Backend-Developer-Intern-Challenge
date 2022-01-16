@@ -7,7 +7,7 @@ from model import connect_to_db
 import os
 
 app = Flask(__name__)
-
+app.secret_key = "Shopify-Challenge"
 
 
 
@@ -26,6 +26,7 @@ def inventory_shipment():
 # Inventory routes
 @app.route("/addItemInventory", methods=['POST'])
 def add_item():
+    """"Add an item to inventory"""
     name = request.form.get('name')
     description = request.form.get('description')
     quantity = request.form.get('quantity')
@@ -46,6 +47,7 @@ def add_item():
 
 @app.route("/deleteitem", methods=['POST'])
 def remove_item():
+    """Removes item from inventory"""
     item_id = request.json.get("item_id")
 
     crud.delete_item(item_id)
@@ -54,6 +56,7 @@ def remove_item():
 
 @app.route("/edit_inventory", methods=['POST'])
 def edit_item():
+    """Edit an attribute of an item in inventory"""
     name = request.form.get('new_name')
     qty = request.form.get('new_qty')
     desc = request.form.get('new_desc')
@@ -162,6 +165,12 @@ def delete_item_from_shipment():
     crud.remove_item(ship_id, item_id)
 
     return jsonify("deleted")
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

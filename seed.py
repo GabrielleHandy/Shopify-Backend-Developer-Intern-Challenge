@@ -16,7 +16,7 @@ wicker = crud.create_item("Wicked Wicker Basket", 40)
 
 
 
-
+# create a couple shipments with some items 
 ship1 = crud.create_shipment(ship_to = "Jessica Broadway, Sunny California", ship_from = "Warehouse 18")
 crud.add_item(ship1.ship_id, wicker.item_id, 10)
 crud.add_item(ship1.ship_id, glasses.item_id, 2)
